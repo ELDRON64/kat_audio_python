@@ -4,13 +4,17 @@ import wave
 from multiprocessing import Process, process
 import numpy
 import struct
-import tk
-from tk import filedialog,messagebox
+import tkinter as tk
+from tkinter import filedialog,messagebox
 from shutil import copy2
 from functools import partial
 import os
 from tkinter.constants import END, FALSE, RIGHT, TRUE
-import winsound
+
+try:
+	import winsound
+except ModuleNotFoundError:
+	from playsound import playsound
 
 class SetUp:
     alpabeto = ["a","à","b","c","ch","d","e","è","f","g","gh","i","ì","j","k","l","m","n","o","ò","p","q","r","s","t","u","ù","v","w","x","y","z"]
@@ -514,21 +518,13 @@ class GUI:
     OriginalDir = os.getcwd()
     infoPannelIsOpen = False
     info = """
-        questo è il kat projekt
-        benvenuto, non so perchè sei qui
-        e mi dispiace
+Benvenuto nella Kat Kave
+Con questo programma puoi creare delle frasi
 
-        la persona che sta scrivendo questo testo è il creatore
-        puoi riferti a me come ELDRON64
-
-        ora passiamo alle informazioni importanti:
-        
-        puoi chiamamarmi CUM,KUM o THE CUM MASTER 
-        e faccio parte del cock department
-        non ti è permesso chiede il motivo
-
-
-        il katProjekt è un progetto amatoriale di creazione di suoni.
+1) carica una libreria audio
+2) inserisci una frase nell'apposito slot e aggiungi un titolo
+3) seleziona la lingua e priemi genera
+4) troverai il risiultato nella casella output
     """
 
     def setUpGUI():
@@ -537,7 +533,7 @@ class GUI:
         GUI.setUpGUI.root.geometry("1200x900")
         
         try:
-            GUI.setUpGUI.root.iconbitmap(GUI.OriginalDir + r"\katcon.ico")
+            GUI.setUpGUI.root.iconbitmap(GUI.OriginalDir + r"/katcon.ico")
         except:
             print("icona non trovata")
 
@@ -584,8 +580,8 @@ class GUI:
         pass
 
     def ShowLoadedAudios():
-        GUI.libraries = os.listdir(GUI.OriginalDir + r"\Data\librerieSuoni")
-        GUI.loadedLibraries = os.listdir(GUI.OriginalDir + r"\Data\suoni")
+        GUI.libraries = os.listdir(GUI.OriginalDir + r"/Data/librerieSuoni")
+        GUI.loadedLibraries = os.listdir(GUI.OriginalDir + r"/Data/suoni")
         
         for w in GUI.baseUI.voceFrame.winfo_children():
             w.destroy()
@@ -613,11 +609,14 @@ class GUI:
 
     def PlaySound(nome):
         nomePercorso = GUI.OriginalDir + "/Data/frasi/" + nome
-        winsound.PlaySound(nomePercorso,winsound.SND_ASYNC)
+        try:
+            winsound.PlaySound(nomePercorso,winsound.SND_ASYNC)
+        except: # function not found
+            playsound ( nomePercorso, False )
 
     def ShowGeneratedFiles():
         print("show")
-        GUI.outputs = os.listdir(GUI.OriginalDir + r"\Data\frasi")
+        GUI.outputs = os.listdir(GUI.OriginalDir + r"/Data/frasi")
         
         head = tk.Label(GUI.baseUI.outputFrame,text = "Output")
         head.pack()
@@ -725,7 +724,7 @@ class GUI:
                     c += 1
             
             if c == 0:
-                copy2(el,GUI.OriginalDir + r"\Data\librerieSuoni")
+                copy2(el,GUI.OriginalDir + r"/Data/librerieSuoni")
                 GUI.libraries.append(nomeFilee)
         GUI.ShowLoadedAudios()
 
